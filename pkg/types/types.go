@@ -160,6 +160,9 @@ const DefaultKubeconfigPrefix = DefaultObjectNamePrefix + "-kubeconfig"
 // DefaultAPIPort defines the default Kubernetes API Port
 const DefaultAPIPort = "6443"
 
+// DefaultExternalAPIPort describes the port on the host that the Kubernetes API will be exposed on
+const DefaultExternalAPIPort = "random" // random: will choose a random free host port
+
 // DefaultAPIHost defines the default host (IP) for the Kubernetes API
 const DefaultAPIHost = "0.0.0.0"
 

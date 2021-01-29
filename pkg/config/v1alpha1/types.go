@@ -116,14 +116,14 @@ type SimpleConfig struct {
 	Name         string                  `mapstructure:"name" yaml:"name" json:"name,omitempty"`
 	Servers      int                     `mapstructure:"servers" yaml:"servers" json:"servers,omitempty"` //nolint:lll    // default 1
 	Agents       int                     `mapstructure:"agents" yaml:"agents" json:"agents,omitempty"`    //nolint:lll    // default 0
-	ExposeAPI    SimpleExposureOpts      `mapstructure:"kubeAPI" yaml:"kubeAPI" json:"kubeAPI,omitempty"`
+	ExposeAPI    *SimpleExposureOpts     `mapstructure:"kubeAPI" yaml:"kubeAPI" json:"kubeAPI,omitempty"`
 	Image        string                  `mapstructure:"image" yaml:"image" json:"image,omitempty"`
 	Network      string                  `mapstructure:"network" yaml:"network" json:"network,omitempty"`
 	ClusterToken string                  `mapstructure:"clusterToken" yaml:"clusterToken" json:"clusterToken,omitempty"` // default: auto-generated
 	Volumes      []VolumeWithNodeFilters `mapstructure:"volumes" yaml:"volumes" json:"volumes,omitempty"`
 	Ports        []PortWithNodeFilters   `mapstructure:"ports" yaml:"ports" json:"ports,omitempty"`
 	Labels       []LabelWithNodeFilters  `mapstructure:"labels" yaml:"labels" json:"labels,omitempty"`
-	Options      SimpleConfigOptions     `mapstructure:"options" yaml:"options" json:"options,omitempty"`
+	Options      *SimpleConfigOptions    `mapstructure:"options" yaml:"options" json:"options,omitempty"`
 	Env          []EnvVarWithNodeFilters `mapstructure:"env" yaml:"env" json:"env,omitempty"`
 	Registries   struct {
 		Use    []string `mapstructure:"use" yaml:"use,omitempty" json:"use,omitempty"`
