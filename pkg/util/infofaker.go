@@ -42,13 +42,7 @@ func meminfoContent(totalKB int64) string {
 
 // GetFakeMeminfoPathForName returns a path to (existent or not) fake meminfo file for a given node/container name
 func GetFakeMeminfoPathForName(uniqueName string) (string, error) {
-	// this file needs to be kept across reboots, keep it in ~/.k3d
-	configdir, err := GetConfigDirOrCreate()
-	if err != nil {
-		return "", err
-	}
-	fakeMeminfoFilename := fmt.Sprintf(".meminfo-%s", uniqueName)
-	return path.Join(configdir, fakeMeminfoFilename), nil
+	return fakeInfoPathForName("meminfo", uniqueName)
 }
 
 // MakeFakeMeminfo creates a fake meminfo file to be mounted and provide a specific RAM capacity.
@@ -73,5 +67,62 @@ func MakeFakeMeminfo(memoryBytes int64, uniqueName string) (string, error) {
 		return "", err
 	}
 
-	return fakememinfo.Name(), nil
+	return fakeMeminfoPath, nil
+}
+
+// creates a mininal fake cpuinfo with fields required by cadvisor (see machine.go in cadvisor)
+// frequency is omitted on purpose to force it to be read from sys catalog
+// out limits support only full cores, not fractional shares
+func cpuinfoContent(cores int) string {
+	entries := make([]string, cores)
+	for i := 0; i < cores; i++ {
+		line := "core id : %d\nphysical id : 0"
+		if i != cores-1 {
+			line += "\n"
+		}
+		entries[i] = fmt.Sprintf(line, i)
+	}
+
+	return strings.Join(entries, "\n")
+}
+
+// GetFakeCpuinfoPathForName returns a path to (existent or not) fake meminfo file for a given node/container name
+func GetFakeCpuinfoPathForName(uniqueName string) (string, error) {
+	return fakeInfoPathForName("cpuinfo", uniqueName)
+}
+
+// MakeFakeCpuinfo creates a fake cpuinfo file to be mounted and provide a specific cpu cores count
+// This file is created on a per specific container/node basis, uniqueName must ensure that.
+// Returns a path to the file
+func MakeFakeCpuinfo(cpuCores int, uniqueName string) (string, error) {
+	fakeCpuinfoPath, err := GetFakeCpuinfoPathForName(uniqueName)
+	if err != nil {
+		return "", err
+	}
+	fakecpuinfo, err := os.Create(fakeCpuinfoPath)
+	defer fakecpuinfo.Close()
+	if err != nil {
+		return "", err
+	}
+
+	// write content
+
+	content := cpuinfoContent(cpuCores)
+	_, err = fakecpuinfo.WriteString(content)
+	if err != nil {
+		return "", err
+	}
+
+	return fakeCpuinfoPath, nil
+}
+
+// returns a path to (existent or not) fake (mem or cpu)info file for a given node/container name
+func fakeInfoPathForName(infoType string, uniqueName string) (string, error) {
+	// this file needs to be kept across reboots, keep it in ~/.k3d
+	configdir, err := GetConfigDirOrCreate()
+	if err != nil {
+		return "", err
+	}
+	fakeInfoFilename := fmt.Sprintf(".%s-%s", infoType, uniqueName)
+	return path.Join(configdir, fakeInfoFilename), nil
 }
