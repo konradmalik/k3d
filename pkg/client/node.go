@@ -338,12 +338,22 @@ func NodeCreate(ctx context.Context, runtime runtimes.Runtime, node *k3d.Node, c
 		if err != nil {
 			return fmt.Errorf("Invalid memory limit format: %+v", err)
 		}
-		// mount fake meminfo as readonly
+		// create and mount fake meminfo as readonly
 		fakemempath, err := util.MakeFakeMeminfo(memory, node.Name)
 		if err != nil {
 			return fmt.Errorf("Failed to create fake meminfo: %+v", err)
 		}
 		node.Volumes = append(node.Volumes, fmt.Sprintf("%s:/proc/meminfo:ro", fakemempath))
+	}
+
+	// cpu limits
+	if node.Cores > 0 {
+		// create and mount fake cpuinfo as readonly
+		fakecpuinfopath, err := util.MakeFakeCpuinfo(node.Cores, node.Name)
+		if err != nil {
+			return fmt.Errorf("Failed to create fake cpuinfo: %+v", err)
+		}
+		node.Volumes = append(node.Volumes, fmt.Sprintf("%s:/proc/cpuinfo:ro", fakecpuinfopath))
 	}
 
 	/*
