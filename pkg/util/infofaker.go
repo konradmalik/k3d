@@ -33,9 +33,9 @@ import (
 // creates a mininal fake meminfo with fields required by cadvisor (see machine.go in cadvisor)
 func meminfoContent(totalKB int64) string {
 	var lines = []string{
-		fmt.Sprintf("MemTotal: %d kB", totalKB),
+		fmt.Sprintf("MemTotal: %d kB\n", totalKB),
 		// this may be configurable later
-		"SwapTotal: 0 kB",
+		"SwapTotal: 0 kB\n",
 	}
 	return strings.Join(lines, "\n")
 }
@@ -76,10 +76,7 @@ func MakeFakeMeminfo(memoryBytes int64, uniqueName string) (string, error) {
 func cpuinfoContent(cores int) string {
 	entries := make([]string, cores)
 	for i := 0; i < cores; i++ {
-		line := "core id : %d\nphysical id : 0"
-		if i != cores-1 {
-			line += "\n"
-		}
+		line := "core id : %d\nphysical id : 0\n"
 		entries[i] = fmt.Sprintf(line, i)
 	}
 

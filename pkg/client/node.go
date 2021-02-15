@@ -375,12 +375,23 @@ func NodeDelete(ctx context.Context, runtime runtimes.Runtime, node *k3d.Node, o
 
 	// delete fake meminfo
 	if node.Memory != "" {
-		log.Debug("Cleaning memfile from k3d config dir for this node...")
+		log.Debug("Cleaning meminfo from k3d config dir for this node...")
 		filepath, err := util.GetFakeMeminfoPathForName(node.Name)
 		err = os.Remove(filepath)
 		if err != nil {
 			// this err prob should not be fatal, just log it
 			log.Errorf("Could not remove fake meminfo file for node %s: %+v", node.Name, err)
+		}
+	}
+
+	// delete fake cpuinfo
+	if node.Cores > 0 {
+		log.Debug("Cleaning cpuinfo from k3d config dir for this node...")
+		filepath, err := util.GetFakeCpuinfoPathForName(node.Name)
+		err = os.Remove(filepath)
+		if err != nil {
+			// this err prob should not be fatal, just log it
+			log.Errorf("Could not remove fake cpuinfo file for node %s: %+v", node.Name, err)
 		}
 	}
 
