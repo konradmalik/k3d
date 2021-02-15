@@ -69,6 +69,7 @@ func NewCmdNodeCreate() *cobra.Command {
 
 	cmd.Flags().StringP("image", "i", fmt.Sprintf("%s:%s", k3d.DefaultK3sImageRepo, version.GetK3sVersion(false)), "Specify k3s image used for the node(s)")
 	cmd.Flags().String("memory", "", "Memory limit imposed on the node [From docker]")
+	cmd.Flags().Int("cores", 0, "CPU cores limit imposed on the node [int]")
 
 	cmd.Flags().BoolVar(&createNodeOpts.Wait, "wait", false, "Wait for the node(s) to be ready before returning.")
 	cmd.Flags().DurationVar(&createNodeOpts.Timeout, "timeout", 0*time.Second, "Maximum waiting time for '--wait' before canceling/returning.")
@@ -117,11 +118,20 @@ func parseCreateNodeCmd(cmd *cobra.Command, args []string) ([]*k3d.Node, *k3d.Cl
 	// --memory
 	memory, err := cmd.Flags().GetString("memory")
 	if err != nil {
+		// should never happen as the default is an empty string
 		log.Errorln("No memory specified")
 		log.Fatalln(err)
 	}
 	if _, err := dockerunits.RAMInBytes(memory); memory != "" && err != nil {
 		log.Errorf("Provided memory limit value is invalid")
+	}
+
+	// --cores
+	cores, err := cmd.Flags().GetInt("cores")
+	if err != nil {
+		// should never happen as the default is zero
+		log.Errorln("No cores specified")
+		log.Fatalln(err)
 	}
 
 	// generate list of nodes
@@ -136,6 +146,7 @@ func parseCreateNodeCmd(cmd *cobra.Command, args []string) ([]*k3d.Node, *k3d.Cl
 			},
 			Restart: true,
 			Memory:  memory,
+			Cores:   cores,
 		}
 		nodes = append(nodes, node)
 	}

@@ -96,6 +96,13 @@ func TranslateNodeToContainer(node *k3d.Node) (*NodeInDocker, error) {
 		hostConfig.Memory = memory
 	}
 
+	// cores limits
+	// fake cpuinfo is mounted to hostConfig.Binds
+	if node.Cores > 0 {
+		// we need to set nanocpus
+		hostConfig.NanoCPUs = int64(node.Cores * 1e9)
+	}
+
 	/* They have to run in privileged mode */
 	// TODO: can we replace this by a reduced set of capabilities?
 	hostConfig.Privileged = true
@@ -251,6 +258,9 @@ func TranslateContainerDetailsToNode(containerDetails types.ContainerJSON) (*k3d
 		memoryStr = ""
 	}
 
+	// cores limit
+	cores := int(containerDetails.HostConfig.NanoCPUs / 1e9)
+
 	node := &k3d.Node{
 		Name:       strings.TrimPrefix(containerDetails.Name, "/"), // container name with leading '/' cut off
 		Role:       k3d.NodeRoles[containerDetails.Config.Labels[k3d.LabelRole]],
@@ -268,6 +278,7 @@ func TranslateContainerDetailsToNode(containerDetails types.ContainerJSON) (*k3d
 		AgentOpts:  k3d.AgentOpts{},
 		State:      nodeState,
 		Memory:     memoryStr,
+		Cores:      cores,
 	}
 	return node, nil
 }

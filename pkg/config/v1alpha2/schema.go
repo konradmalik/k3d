@@ -204,8 +204,14 @@ var JSONSchema = `{
             "serversMemory": {
               "type": "string"
             },
+            "serversCores": {
+              "type": "integer"
+            },
             "agentsMemory": {
               "type": "string"
+            },
+            "agentsCores": {
+              "type": "integer"
             }
           }
         }

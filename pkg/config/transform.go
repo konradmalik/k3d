@@ -108,6 +108,7 @@ func TransformSimpleToClusterConfig(ctx context.Context, runtime runtimes.Runtim
 			Args:       simpleConfig.Options.K3sOptions.ExtraServerArgs,
 			ServerOpts: k3d.ServerOpts{},
 			Memory:     simpleConfig.Options.Runtime.ServersMemory,
+			Cores:      simpleConfig.Options.Runtime.ServersCores,
 		}
 
 		// first server node will be init node if we have more than one server specified but no external datastore
@@ -125,6 +126,7 @@ func TransformSimpleToClusterConfig(ctx context.Context, runtime runtimes.Runtim
 			Image:  simpleConfig.Image,
 			Args:   simpleConfig.Options.K3sOptions.ExtraAgentArgs,
 			Memory: simpleConfig.Options.Runtime.AgentsMemory,
+			Cores:  simpleConfig.Options.Runtime.AgentsCores,
 		}
 		newCluster.Nodes = append(newCluster.Nodes, &agentNode)
 	}
@@ -230,7 +232,9 @@ func TransformSimpleToClusterConfig(ctx context.Context, runtime runtimes.Runtim
 		K3sAgentArgs:               simpleConfig.Options.K3sOptions.ExtraAgentArgs,
 		GPURequest:                 simpleConfig.Options.Runtime.GPURequest,
 		ServersMemory:              simpleConfig.Options.Runtime.ServersMemory,
+		ServersCores:               simpleConfig.Options.Runtime.ServersCores,
 		AgentsMemory:               simpleConfig.Options.Runtime.AgentsMemory,
+		AgentsCores:                simpleConfig.Options.Runtime.AgentsCores,
 		GlobalLabels:               map[string]string{}, // empty init
 		GlobalEnv:                  []string{},          // empty init
 	}

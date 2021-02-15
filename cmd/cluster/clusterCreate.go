@@ -320,8 +320,14 @@ func NewCmdClusterCreate() *cobra.Command {
 	cmd.Flags().String("servers-memory", "", "Memory limit imposed on the server nodes [From docker]")
 	_ = cfgViper.BindPFlag("options.runtime.serversmemory", cmd.Flags().Lookup("servers-memory"))
 
+	cmd.Flags().Int("servers-cores", 0, "CPU cores limit imposed on the server nodes [integer, default is no limit]")
+	_ = cfgViper.BindPFlag("options.runtime.serverscores", cmd.Flags().Lookup("servers-cores"))
+
 	cmd.Flags().String("agents-memory", "", "Memory limit imposed on the agents nodes [From docker]")
 	_ = cfgViper.BindPFlag("options.runtime.agentsmemory", cmd.Flags().Lookup("agents-memory"))
+
+	cmd.Flags().Int("agents-cores", 0, "CPU cores limit imposed on the agent nodes [integer, default is no limit]")
+	_ = cfgViper.BindPFlag("options.runtime.agentscores", cmd.Flags().Lookup("agents-cores"))
 
 	/* Image Importing */
 	cmd.Flags().Bool("no-image-volume", false, "Disable the creation of a volume for importing images")
